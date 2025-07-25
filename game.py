@@ -25,15 +25,23 @@ def load_map(filename, map_struct):
     map_file = open(filename, 'r')
     global MAP_WIDTH
     global MAP_HEIGHT
-    
     map_struct.clear()
     
     # TODO: Add your map loading code here
-    
-    MAP_WIDTH = len(map_struct[0])
-    MAP_HEIGHT = len(map_struct)
+    for line in map_file:
+        line = line.strip()
+        if line:
+            map_struct.append(list(line))
+    if map_struct:
+        MAP_WIDTH = len(map_struct[0])
+        MAP_HEIGHT = len(map_struct)
+    else:
+        print("Error; Empty map file")
+        map_file.close()
+        return False
 
     map_file.close()
+    return True
 
 # This function clears the fog of war at the 3x3 square around the player
 def clear_fog(fog, player):
