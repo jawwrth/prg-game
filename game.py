@@ -45,6 +45,12 @@ def load_map(filename, map_struct):
 
 # This function clears the fog of war at the 3x3 square around the player
 def clear_fog(fog, player):
+    x , y = player['x'], player['y']
+    for dy in [-1, 0, 1]:
+        for dx in [-1, 0, 1]:
+            nx , ny = x + dx, y + dy
+            if 0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT:
+                fog[ny][nx] = game_map[ny][nx]
     return
 
 def initialize_game(game_map, fog, player):
@@ -52,7 +58,10 @@ def initialize_game(game_map, fog, player):
     load_map("level1.txt", game_map)
 
     # TODO: initialize fog
-    
+def initialize_fog(fog):
+    fog.clear()
+    for _ in range(MAP_HEIGHT):
+        fog.append(['?'] * MAP_WIDTH)
     # TODO: initialize player
     #   You will probably add other entries into the player dictionary
     player['x'] = 0
@@ -65,15 +74,55 @@ def initialize_game(game_map, fog, player):
     player['steps'] = 0
     player['turns'] = TURNS_PER_DAY
 
-    clear_fog(fog, player)
-    
+def clear_fog(fog, player): 
+    x, y = player['x'], player['y']
+    for dy in [-1, 0, 1]:
+        for dx in [-1, 0, 1]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT:
+                fog[ny][nx] = game_map[ny][nx]
+
+def initialize_game(game_map, fog, player):
+    if not load_map("level1.txt", game_map):
+        return False
+
 # This function draws the entire map, covered by the fof
 def draw_map(game_map, fog, player):
-    return
+    print("+" + "-" * MAP_WIDTH + "+")
+    for y in range(MAP_HEIGHT):
+        print("|", end="")
+        for x in range(MAP_WIDTH):
+            if x == player['x'] and y == player['y'] and player.get('in_mine', False):
+                print("M", end="")
+            elif x == player['portal_x'] and y == player['portal_y'] and not player.get('in_mine', False):
+                print("P", end="")
+            elif x == 0 and y == 0 and not player.get('in_mine', False):
+                print("T", end="")
+            else:
+                print(fog[y][x], end="")
+        print("|")
+    print("+" + "-" * MAP_WIDTH + "+")
+
 
 # This function draws the 3x3 viewport
 def draw_view(game_map, fog, player):
-    return
+    x , y = player['x'], player['y']
+    print("+" + "---" * 3 + "+")
+    for dy in[-1, 0, 1]:
+        print("|", end="")
+        for dx in [-1, 0, 1]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < MAP_WIDTH and 0 <= ny < MAP_HEIGHT:
+                if dx == player['x'] and dy == player['y']:
+                    print("M", end="")
+                elif game_map[ny][nx] == ' ':
+                    print(" ", end="")
+                else:
+                    print(f"{game_map[ny][nx]}", end="")
+            else:
+                print("#", end="")
+        print("|")
+    print("+" + "---" * 3 + "+")
 
 # This function shows the information for the player
 def show_information(player):
