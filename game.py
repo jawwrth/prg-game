@@ -64,15 +64,24 @@ def initialize_fog(fog):
         fog.append(['?'] * MAP_WIDTH)
     # TODO: initialize player
     #   You will probably add other entries into the player dictionary
+    player['name'] = ""
     player['x'] = 0
     player['y'] = 0
     player['copper'] = 0
     player['silver'] = 0
     player['gold'] = 0
     player['GP'] = 0
-    player['day'] = 0
+    player['day'] = 1
     player['steps'] = 0
     player['turns'] = TURNS_PER_DAY
+    player['load'] = 0
+    player['max_load'] = 10
+    player['pickaxe'] = 1
+    player['portal_x'] = 0
+    player['portal_y'] = 0
+    
+    clear_fog(fog, player)
+    return True
 
 def clear_fog(fog, player): 
     x, y = player['x'], player['y']
@@ -85,6 +94,7 @@ def clear_fog(fog, player):
 def initialize_game(game_map, fog, player):
     if not load_map("level1.txt", game_map):
         return False
+    initialize_fog(fog)
 
 # This function draws the entire map, covered by the fof
 def draw_map(game_map, fog, player):
@@ -126,15 +136,38 @@ def draw_view(game_map, fog, player):
 
 # This function shows the information for the player
 def show_information(player):
-    return
+    print("\n--- Player Information ---")
+    print(f"Name: {player['name']}")
+    print(f"Current position: ({player['x']}, {player['y']})")
+    print(f"Pickaxe level: {player['pickaxe']} ({' copper' if player['pickaxe'] == 1 else ' silver' if player['pickaxe'] == 2 else ' copper, silver, gold'})")
+    print(f"Gold:{player['gold']}")
+    print(f"Silver: {player['silver']}")
+    print(f"Copper: {player['copper']}")
+    print("--------------------------")
+    print(f"Load: {player['load']} / {player['max_load']}")
+    print("--------------------------")
+    print(f"GP: {player['GP']}")
+    print(f"Steps taken: {player['steps']}")
+    print("--------------------------")
+    print(f"DAY {player['day']}")
+    
 
 # This function saves the game
 def save_game(game_map, fog, player):
-    # save map
-    # save fog
-    # save player
-    return
+    f = open("saved_game.txt", "w")
+
+    for key, value in player.items():
+        if isinstance(value , (int, str)):
+            f.write(f"{key}:{value}\n")
         
+        f.write("fog:\n")
+    for row in fog:
+        f.write("".join(row) + "\n") 
+
+    f.close()
+    print("Game saved successfully.")
+    return True
+ 
 # This function loads the game
 def load_game(game_map, fog, player):
     # load map
