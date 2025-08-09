@@ -160,20 +160,52 @@ def save_game(game_map, fog, player):
         if isinstance(value , (int, str)):
             f.write(f"{key}:{value}\n")
         
-        f.write("fog:\n")
+    f.write("fog:\n")
     for row in fog:
-        f.write("".join(row) + "\n") 
-
+        f.write("".join(row) + "\n")
+    f.write("map:\n")
+    for row in game_map:
+        f.write("".join(row) + "\n")
+    
     f.close()
     print("Game saved successfully.")
     return True
  
 # This function loads the game
 def load_game(game_map, fog, player):
+    f = open("saved_game.txt", "r")
+    lines = f.readlines()
+    f.close()
+
     # load map
+    game_map.clear()
+    i += 1
+    while i < len(lines):
+        game_map.append(list(lines[i].strip()))
+        i += 1
+    global MAP_WIDTH, MAP_HEIGHT
+    MAP_WIDTH = len(game_map[0])
+    MAP_HEIGHT = len(game_map)
+    print("Game Loaded Successfully")
+    return True
+
     # load fog
+    fog.clear()
+    i += 1
+    while i < len(lines):
+        game_map.append(list(lines[i].strip()))
+        i += 1
+    
     # load player
-    return
+    player.clear()
+    i = 0
+    while i <len(lines) and lines[i].strip() != "fog:":
+        key, value = lines[i].strip().split(":" , 1)
+        if value.isdigit():
+            player[key] = int(value)
+        else:
+            player[key] = value
+        i += 1
 
 def show_main_menu():
     print()
